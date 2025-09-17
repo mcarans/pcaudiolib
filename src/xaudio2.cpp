@@ -199,7 +199,7 @@ create_xaudio2_object(const char *device,
                       const char *application_name,
                       const char *description)
 {
-	CoInitialize(NULL);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
 	IXAudio2 *audio = NULL;
 	HRESULT hr = XAudio2Create(&audio, 0, XAUDIO2_DEFAULT_PROCESSOR);

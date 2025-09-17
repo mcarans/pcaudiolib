@@ -57,7 +57,8 @@ src_libpcaudio_la_LDFLAGS = -version-info $(LIBPCAUDIO_VERSION) \
 	${ALSA_LIBS} \
 	${PULSEAUDIO_LIBS} \
 	${QSA_LIBS} \
-	${COREAUDIO_LIBS}
+	${COREAUDIO_LIBS} \
+	${XAUDIO2_LIBS}
 
 src_libpcaudio_la_CFLAGS = ${AM_CFLAGS} \
 	${ALSA_CFLAGS} \
@@ -65,18 +66,15 @@ src_libpcaudio_la_CFLAGS = ${AM_CFLAGS} \
 	${COREAUDIO_CFLAGS}
 
 src_libpcaudio_la_SOURCES = \
-	src/alsa.c \
-	src/qsa.c \
-	src/oss.c \
-	src/pulseaudio.c \
 	src/audio_priv.h \
 	src/audio.c
 
 # Windows audio support
-EXTRA_DIST += \
+if HAVE_XAUDIO2
+src_libpcaudio_la_SOURCES += \
 	src/windows.c \
 	src/xaudio2.cpp
-
+else
 # Mac OSX audio support
 if HAVE_COREAUDIO
 src_libpcaudio_la_SOURCES += \
@@ -89,4 +87,11 @@ src_libpcaudio_la_SOURCES += \
 EXTRA_DIST += \
 	src/TPCircularBuffer/README.markdown \
 	src/TPCircularBuffer/TPCircularBuffer.podspec
+else
+src_libpcaudio_la_SOURCES += \
+	src/alsa.c \
+	src/qsa.c \
+	src/oss.c \
+	src/pulseaudio.c
+endif
 endif

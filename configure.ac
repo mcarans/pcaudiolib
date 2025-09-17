@@ -15,6 +15,7 @@ dnl Program checks.
 dnl ================================================================
 
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 
@@ -93,6 +94,33 @@ fi
 AC_SUBST(QSA_LIBS)
 
 dnl ================================================================
+dnl xaudio2 checks.
+dnl ================================================================
+
+AC_ARG_WITH([xaudio2],
+    [AS_HELP_STRING([--with-xaudio2], [support for xaudio2 audio output on Windows @<:@default=yes@:>@])],
+    [])
+
+if test "$with_xaudio2" = "no";then
+    echo "Disabling xaudio2 audio output support"
+    have_xaudio2=no
+else
+    case "$host" in
+      *-*-mingw*)
+        have_xaudio2=yes
+        XAUDIO2_LIBS="-lole32 -lxaudio2_9"
+        AC_DEFINE(HAVE_XAUDIO2_H, [], [Do we have xaudio?])
+        ;;
+    *)
+        have_xaudio2=no
+        ;;
+    esac
+fi
+
+AC_SUBST(XAUDIO2_LIBS)
+AM_CONDITIONAL([HAVE_XAUDIO2], [test "x${have_xaudio2}" = "xyes"])
+
+dnl ================================================================
 dnl coreaudio checks.
 dnl ================================================================
 
@@ -160,6 +188,7 @@ AC_MSG_NOTICE([
 	PulseAudio support:            ${have_pulseaudio}
 	ALSA support:                  ${have_alsa}
 	QSA support:                   ${have_qsa}
+	Xaudio2 support:               ${have_xaudio2}
 	Coreaudio support:             ${have_coreaudio}
 	OSS support:                   ${have_oss}
 ])

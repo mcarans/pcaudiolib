@@ -78,6 +78,15 @@ and install it using:
 
 	sudo make install
 
+### Windows MinGW64
+
+You can build on Windows MinGW64 like this:
+
+    ./autogen.sh
+    ./configure --prefix=/mingw64
+    sed -i.bak -e "s/\(allow_undefined=\)yes/\1no/" libtool
+    make LIBTOOLFLAGS=-v
+
 ## Bugs
 
 Report bugs to the [pcaudiolib issues](https://github.com/espeak-ng/pcaudiolib/issues)
