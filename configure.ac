@@ -170,6 +170,21 @@ else
 fi
 
 dnl ================================================================
+dnl Patch libtool if mingw64
+dnl ================================================================
+
+AC_CONFIG_COMMANDS([fix-libtool], [
+  case "$host_os" in
+    mingw32*)
+      if test -f libtool; then
+        echo "Patching libtool for mingw64: setting allow_undefined=no"
+        sed -i.bak -e 's/\(allow_undefined=\)yes/\1no/' libtool
+      fi
+      ;;
+  esac
+])
+
+dnl ================================================================
 dnl Generate output.
 dnl ================================================================
 

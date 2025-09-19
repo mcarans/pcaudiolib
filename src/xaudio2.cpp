@@ -147,6 +147,12 @@ xaudio2_object_flush(struct audio_object *object)
 {
 	struct xaudio2_object *self = to_xaudio2_object(object);
 
+	if (self->source != NULL)
+	{
+		self->source->Stop(0);                // Stop playback
+		self->source->FlushSourceBuffers();   // Clear queued buffers
+	}
+
 	return S_OK;
 }
 
@@ -165,9 +171,8 @@ xaudio2_object_write(struct audio_object *object,
 	buffer.pAudioData = buf_data;
 	buffer.pContext = buf_data;
 
-	HRESULT hr = S_OK;
-	if (SUCCEEDED(hr))
-		hr = self->source->SubmitSourceBuffer(&buffer);
+	HRESULT hr;
+	hr = self->source->SubmitSourceBuffer(&buffer);
 
 	XAUDIO2_VOICE_STATE state = { 0 };
 	self->source->GetState(&state);
@@ -199,10 +204,13 @@ create_xaudio2_object(const char *device,
                       const char *application_name,
                       const char *description)
 {
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	if (FAILED(hr)) {
+		return NULL;
+	}
 
 	IXAudio2 *audio = NULL;
-	HRESULT hr = XAudio2Create(&audio, 0, XAUDIO2_DEFAULT_PROCESSOR);
+	hr = XAudio2Create(&audio, 0, XAUDIO2_DEFAULT_PROCESSOR);
 	if (FAILED(hr) || audio == NULL) {
 		if (audio != NULL)
 			audio->Release();
